@@ -16,14 +16,74 @@
 
 #include QMK_KEYBOARD_H
 
-// clang-format off
-enum layers{
-  MAC_BASE,
-  MAC_FN,
-  WIN_BASE,
-  WIN_FN,
+enum layers {
+    MAC_BASE,
+    MAC_FN,
+    WIN_BASE,
+    WIN_FN,
 };
 
+enum td_actions {
+    TD_ACTION_APP_LAYER_DANCE,
+};
+
+typedef enum {
+    TD_STATE_NONE,
+    TD_STATE_UNKNOWN,
+    TD_STATE_SINGLE_TAP,
+    TD_STATE_SINGLE_HOLD,
+    TD_STATE_DOUBLE_TAP,
+} td_state_t;
+
+td_state_t get_dance_type(tap_dance_state_t *state) {
+    if (state->count == 1) {
+        if (state->pressed) {
+            return TD_STATE_SINGLE_HOLD;
+        } else {
+            return TD_STATE_SINGLE_TAP;
+        }
+    } else if (state->count == 2) {
+        return TD_STATE_DOUBLE_TAP;
+    } else {
+        return TD_STATE_UNKNOWN;
+    }
+}
+
+static td_state_t active_dance = TD_STATE_NONE;
+
+static void layer_dance_finished(tap_dance_state_t *state, void *user_data) {
+    active_dance = get_dance_type(state);
+    switch (active_dance) {
+        case TD_STATE_SINGLE_TAP:
+        tap_code(KC_APPLICATION);
+        break;
+        case TD_STATE_SINGLE_HOLD:
+        layer_on(WIN_FN);
+        break;
+        case TD_STATE_DOUBLE_TAP:
+        if (layer_state_is(WIN_FN)) {
+            layer_off(WIN_FN);
+        } else {
+            layer_on(WIN_FN);
+        }
+        break;
+        default:
+        break;
+    }
+}
+
+static void layer_dance_reset(tap_dance_state_t *state, void *user_data) {
+    if (active_dance == TD_STATE_SINGLE_HOLD) {
+        layer_off(WIN_FN);
+    }
+    active_dance = TD_STATE_NONE;
+}
+
+        tap_dance_action_t tap_dance_actions[] = {
+    [TD_ACTION_APP_LAYER_DANCE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, layer_dance_finished, layer_dance_reset),
+};
+
+// clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [MAC_BASE] = LAYOUT_ansi_92(
         KC_MUTE,  KC_ESC,             KC_BRID,  KC_BRIU,  KC_MCTL,  KC_LPAD,  RGB_VAD,  RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,    KC_VOLU,  KC_SNAP,  KC_SIRI,  RGB_MOD,
@@ -47,7 +107,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,    KC_BSLS,  KC_DEL,   KC_END,   KC_PGDN,
         _______,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,              KC_ENT,
         _______,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,              KC_RSFT,            KC_UP,
-        _______,  KC_LCTL,  KC_LWIN,  KC_LALT,                                KC_SPC,                                 KC_RALT,  KC_RWIN,  LT(WIN_FN, KC_APPLICATION), KC_RCTL,  KC_LEFT,  KC_DOWN,  KC_RGHT),
+        _______,  KC_LCTL,  KC_LWIN,  KC_LALT,                                KC_SPC,                                 KC_RALT,  KC_RWIN,  TD(TD_ACTION_APP_LAYER_DANCE), KC_RCTL,  KC_LEFT,  KC_DOWN,  KC_RGHT),
 
     [WIN_FN] = LAYOUT_ansi_92(
         RGB_TOG,  _______,            KC_BRID,  KC_BRIU,  KC_TASK,  KC_FILE,  RGB_VAD,  RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,    _______,  _______,  RGB_TOG,
