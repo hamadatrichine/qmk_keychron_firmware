@@ -113,7 +113,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         RGB_TOG,  _______,            KC_BRID,  KC_BRIU,  KC_TASK,  KC_FILE,  RGB_VAD,  RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,    _______,  _______,  RGB_TOG,
                   _______,  BT_HST1,  BT_HST2,  BT_HST3,  _______,  _______,  _______,  _______,  KC_NUM_LOCK,  KC_KP_SLASH,  KC_KP_ASTERISK,  KC_KP_MINUS,  KC_KP_PLUS,    _______,  _______,  _______,  _______,
         _______,  RGB_TOG,  RGB_MOD,  RGB_VAI,  RGB_HUI,  RGB_SAI,  RGB_SPI,  _______,  _______,  KC_KP_7,  KC_KP_8,  KC_KP_9,  _______,  _______,    _______,  _______,  _______,  _______,
-        _______,  _______,  RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,  _______,  _______,  KC_KP_4,  KC_KP_5,  KC_KP_6,  _______,              KC_KP_ENTER,
+        _______,  KC_INS,  RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,  _______,  _______,  KC_KP_4,  KC_KP_5,  KC_KP_6,  _______,              KC_KP_ENTER,
         _______,  _______,            _______,  _______,  _______,  _______,  BAT_LVL,  NK_TOGG,  _______,  KC_KP_1,  KC_KP_2,  KC_KP_3,              _______,            _______,
         _______,  _______,  _______,  _______,                                _______,                                KC_KP_0,  KC_KP_DOT,  _______,    _______,  _______,  _______,  _______),
 };
